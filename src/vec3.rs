@@ -24,6 +24,10 @@ impl<T> Vec3<T>
 where
     T: Float,
 {
+    pub fn new(x: T, y: T, z: T) -> Self {
+        Self { x, y, z }
+    }
+
     pub fn len(&self) -> T {
         let len_squared: T = self.x * self.x + self.y * self.y + self.z * self.z;
         len_squared.sqrt()
@@ -47,6 +51,19 @@ where
 
     pub fn unit(&self) -> Self {
         self / self.len()
+    }
+}
+
+impl<T> Default for Vec3<T>
+where
+    T: Float,
+{
+    fn default() -> Self {
+        Self {
+            x: T::zero(),
+            y: T::zero(),
+            z: T::zero(),
+        }
     }
 }
 

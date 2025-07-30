@@ -1,5 +1,4 @@
 use color::Color;
-use vec3::DoubleVec3;
 
 pub mod color;
 pub mod vec3;
@@ -13,11 +12,11 @@ fn main() {
 
     for j in 0..image_height {
         for i in 0..image_width {
-            let pixel_color = Color(DoubleVec3 {
-                x: i as f64 / (image_width - 1) as f64,
-                y: j as f64 / (image_height - 1) as f64,
-                z: 0.0f64,
-            });
+            let pixel_color = Color::new(
+                i as f64 / (image_width - 1) as f64,
+                j as f64 / (image_height - 1) as f64,
+                0.0f64,
+            );
 
             print!("{pixel_color}");
             pb.inc(1);
