@@ -1,5 +1,9 @@
 pub trait Float:
-    num::traits::Float + std::ops::AddAssign + std::ops::MulAssign + std::ops::DivAssign
+    num::traits::Float
+    + std::ops::AddAssign
+    + std::ops::MulAssign
+    + std::ops::DivAssign
+    + std::fmt::Display
 {
 }
 
@@ -14,7 +18,7 @@ pub struct Vec3<T> {
 
 pub type FloatVec3 = Vec3<f32>;
 pub type DoubleVec3 = Vec3<f64>;
-pub type Point3<T> = Vec3<T>;
+pub type Point3 = DoubleVec3;
 
 impl<T> Vec3<T>
 where
@@ -200,5 +204,14 @@ where
             y: self.y / rhs,
             z: self.z / rhs,
         }
+    }
+}
+
+impl<T> std::fmt::Display for Vec3<T>
+where
+    T: Float,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {} {}", self.x, self.y, self.z)
     }
 }
