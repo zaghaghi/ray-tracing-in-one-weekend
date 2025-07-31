@@ -27,3 +27,19 @@ impl Deref for Color {
         &self.0
     }
 }
+
+impl std::ops::Mul<f64> for Color {
+    type Output = Self;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Color::new(self.x * rhs, self.y * rhs, self.z * rhs)
+    }
+}
+
+impl std::ops::Add<Self> for Color {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Color::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}

@@ -1,6 +1,7 @@
 pub trait Float:
     num::traits::Float
     + std::ops::AddAssign
+    + std::ops::SubAssign
     + std::ops::MulAssign
     + std::ops::DivAssign
     + std::fmt::Display
@@ -10,6 +11,7 @@ pub trait Float:
 impl Float for f32 {}
 impl Float for f64 {}
 
+#[derive(Clone)]
 pub struct Vec3<T> {
     pub x: T,
     pub y: T,
@@ -104,6 +106,17 @@ where
     }
 }
 
+impl<T> std::ops::SubAssign for Vec3<T>
+where
+    T: Float,
+{
+    fn sub_assign(&mut self, rhs: Self) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self.z -= rhs.z;
+    }
+}
+
 impl<T> std::ops::MulAssign<Self> for Vec3<T>
 where
     T: Float,
@@ -148,7 +161,22 @@ where
     }
 }
 
-impl<T> std::ops::Add<&Self> for &Vec3<T>
+impl<T> std::ops::Add<Self> for &Vec3<T>
+where
+    T: Float,
+{
+    type Output = Vec3<T>;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Vec3 {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl<T> std::ops::Add<&Self> for Vec3<T>
 where
     T: Float,
 {
@@ -163,7 +191,37 @@ where
     }
 }
 
-impl<T> std::ops::Sub<&Self> for &Vec3<T>
+impl<T> std::ops::Add<Self> for Vec3<T>
+where
+    T: Float,
+{
+    type Output = Vec3<T>;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Vec3 {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl<T> std::ops::Sub<Self> for &Vec3<T>
+where
+    T: Float,
+{
+    type Output = Vec3<T>;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Vec3 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
+    }
+}
+
+impl<T> std::ops::Sub<&Self> for Vec3<T>
 where
     T: Float,
 {
@@ -178,7 +236,37 @@ where
     }
 }
 
+impl<T> std::ops::Sub<Self> for Vec3<T>
+where
+    T: Float,
+{
+    type Output = Vec3<T>;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Vec3 {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
+    }
+}
+
 impl<T> std::ops::Mul<T> for &Vec3<T>
+where
+    T: Float,
+{
+    type Output = Vec3<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Vec3 {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
+    }
+}
+
+impl<T> std::ops::Mul<T> for Vec3<T>
 where
     T: Float,
 {
