@@ -1,13 +1,13 @@
-use crate::vec3::{DoubleVec3, Point3};
+use crate::vec3::{Point3, Vec3};
 
 #[derive(Default)]
 pub struct Ray {
     pub origin: Point3,
-    pub direction: DoubleVec3,
+    pub direction: Vec3,
 }
 
 impl Ray {
-    pub fn new(origin: Point3, direction: DoubleVec3) -> Self {
+    pub fn new(origin: Point3, direction: Vec3) -> Self {
         Self { origin, direction }
     }
 

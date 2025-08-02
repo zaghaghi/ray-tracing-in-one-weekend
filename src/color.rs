@@ -1,12 +1,12 @@
 use std::ops::Deref;
 
-use crate::{interval::Interval, vec3::DoubleVec3};
+use crate::{interval::Interval, vec3::Vec3};
 
-pub struct Color(pub DoubleVec3);
+pub struct Color(pub Vec3);
 
 impl Color {
     pub fn new(r: f64, g: f64, b: f64) -> Self {
-        Self(DoubleVec3::new(r, g, b))
+        Self(Vec3::new(r, g, b))
     }
 }
 
@@ -26,7 +26,7 @@ impl std::fmt::Display for Color {
 }
 
 impl Deref for Color {
-    type Target = DoubleVec3;
+    type Target = Vec3;
 
     fn deref(&self) -> &Self::Target {
         &self.0

@@ -1,44 +1,30 @@
-pub trait Float:
-    num::traits::Float
-    + std::ops::AddAssign
-    + std::ops::SubAssign
-    + std::ops::MulAssign
-    + std::ops::DivAssign
-    + std::fmt::Display
-{
+use rand::distr::uniform::SampleRange;
+
+pub type Float = f64;
+
+#[derive(Clone, Default)]
+pub struct Vec3 {
+    pub x: Float,
+    pub y: Float,
+    pub z: Float,
 }
 
-impl Float for f32 {}
-impl Float for f64 {}
+pub type Point3 = Vec3;
 
-#[derive(Clone)]
-pub struct Vec3<T> {
-    pub x: T,
-    pub y: T,
-    pub z: T,
-}
-
-pub type FloatVec3 = Vec3<f32>;
-pub type DoubleVec3 = Vec3<f64>;
-pub type Point3 = DoubleVec3;
-
-impl<T> Vec3<T>
-where
-    T: Float,
-{
-    pub fn new(x: T, y: T, z: T) -> Self {
+impl Vec3 {
+    pub fn new(x: Float, y: Float, z: Float) -> Self {
         Self { x, y, z }
     }
 
-    pub fn len(&self) -> T {
+    pub fn len(&self) -> Float {
         self.len_squared().sqrt()
     }
 
-    pub fn len_squared(&self) -> T {
+    pub fn len_squared(&self) -> Float {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
-    pub fn dot(&self, rhs: &Self) -> T {
+    pub fn dot(&self, rhs: &Self) -> Float {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
@@ -53,25 +39,24 @@ where
     pub fn unit(&self) -> Self {
         self / self.len()
     }
-}
 
-impl<T> Default for Vec3<T>
-where
-    T: Float,
-{
-    fn default() -> Self {
+    pub fn random() -> Self {
         Self {
-            x: T::zero(),
-            y: T::zero(),
-            z: T::zero(),
+            x: rand::random(),
+            y: rand::random(),
+            z: rand::random(),
+        }
+    }
+    pub fn random_range<R: SampleRange<Float> + Clone>(range: R) -> Self {
+        Self {
+            x: rand::random_range(range.clone()),
+            y: rand::random_range(range.clone()),
+            z: rand::random_range(range.clone()),
         }
     }
 }
 
-impl<T> std::ops::Neg for Vec3<T>
-where
-    T: Float,
-{
+impl std::ops::Neg for Vec3 {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
@@ -83,21 +68,7 @@ where
     }
 }
 
-impl<T> num::traits::MulAddAssign for Vec3<T>
-where
-    T: Float,
-{
-    fn mul_add_assign(&mut self, a: Self, b: Self) {
-        self.x = self.x.mul_add(a.x, b.x);
-        self.y = self.y.mul_add(a.y, b.y);
-        self.z = self.z.mul_add(a.z, b.z);
-    }
-}
-
-impl<T> std::ops::AddAssign for Vec3<T>
-where
-    T: Float,
-{
+impl std::ops::AddAssign for Vec3 {
     fn add_assign(&mut self, rhs: Self) {
         self.x += rhs.x;
         self.y += rhs.y;
@@ -105,10 +76,7 @@ where
     }
 }
 
-impl<T> std::ops::SubAssign for Vec3<T>
-where
-    T: Float,
-{
+impl std::ops::SubAssign for Vec3 {
     fn sub_assign(&mut self, rhs: Self) {
         self.x -= rhs.x;
         self.y -= rhs.y;
@@ -116,10 +84,7 @@ where
     }
 }
 
-impl<T> std::ops::MulAssign<Self> for Vec3<T>
-where
-    T: Float,
-{
+impl std::ops::MulAssign<Self> for Vec3 {
     fn mul_assign(&mut self, rhs: Self) {
         self.x *= rhs.x;
         self.y *= rhs.y;
@@ -127,21 +92,15 @@ where
     }
 }
 
-impl<T> std::ops::MulAssign<T> for Vec3<T>
-where
-    T: Float,
-{
-    fn mul_assign(&mut self, rhs: T) {
+impl std::ops::MulAssign<Float> for Vec3 {
+    fn mul_assign(&mut self, rhs: Float) {
         self.x *= rhs;
         self.y *= rhs;
         self.z *= rhs;
     }
 }
 
-impl<T> std::ops::DivAssign<Self> for Vec3<T>
-where
-    T: Float,
-{
+impl std::ops::DivAssign<Self> for Vec3 {
     fn div_assign(&mut self, rhs: Self) {
         self.x /= rhs.x;
         self.y /= rhs.y;
@@ -149,22 +108,16 @@ where
     }
 }
 
-impl<T> std::ops::DivAssign<T> for Vec3<T>
-where
-    T: Float,
-{
-    fn div_assign(&mut self, rhs: T) {
+impl std::ops::DivAssign<Float> for Vec3 {
+    fn div_assign(&mut self, rhs: Float) {
         self.x /= rhs;
         self.y /= rhs;
         self.z /= rhs;
     }
 }
 
-impl<T> std::ops::Add<Self> for &Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Add<Self> for &Vec3 {
+    type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
         Vec3 {
@@ -175,11 +128,8 @@ where
     }
 }
 
-impl<T> std::ops::Add<&Self> for Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Add<&Self> for Vec3 {
+    type Output = Vec3;
 
     fn add(self, rhs: &Self) -> Self::Output {
         Vec3 {
@@ -190,11 +140,8 @@ where
     }
 }
 
-impl<T> std::ops::Add<Self> for Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Add<Self> for Vec3 {
+    type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
         Vec3 {
@@ -205,11 +152,8 @@ where
     }
 }
 
-impl<T> std::ops::Sub<Self> for &Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Sub<Self> for &Vec3 {
+    type Output = Vec3;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Vec3 {
@@ -220,11 +164,8 @@ where
     }
 }
 
-impl<T> std::ops::Sub<&Self> for Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Sub<&Self> for Vec3 {
+    type Output = Vec3;
 
     fn sub(self, rhs: &Self) -> Self::Output {
         Vec3 {
@@ -235,11 +176,8 @@ where
     }
 }
 
-impl<T> std::ops::Sub<Self> for Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Sub<Self> for Vec3 {
+    type Output = Vec3;
 
     fn sub(self, rhs: Self) -> Self::Output {
         Vec3 {
@@ -250,13 +188,10 @@ where
     }
 }
 
-impl<T> std::ops::Mul<T> for &Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Mul<Float> for &Vec3 {
+    type Output = Vec3;
 
-    fn mul(self, rhs: T) -> Self::Output {
+    fn mul(self, rhs: Float) -> Self::Output {
         Vec3 {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -265,13 +200,10 @@ where
     }
 }
 
-impl<T> std::ops::Mul<T> for Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Mul<Float> for Vec3 {
+    type Output = Vec3;
 
-    fn mul(self, rhs: T) -> Self::Output {
+    fn mul(self, rhs: Float) -> Self::Output {
         Vec3 {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -280,29 +212,18 @@ where
     }
 }
 
-impl std::ops::Mul<&Vec3<f32>> for f32 {
-    type Output = Vec3<f32>;
+impl std::ops::Mul<&Vec3> for Float {
+    type Output = Vec3;
 
-    fn mul(self, rhs: &Vec3<f32>) -> Self::Output {
+    fn mul(self, rhs: &Vec3) -> Self::Output {
         rhs * self
     }
 }
 
-impl std::ops::Mul<&Vec3<f64>> for f64 {
-    type Output = Vec3<f64>;
+impl std::ops::Div<Float> for &Vec3 {
+    type Output = Vec3;
 
-    fn mul(self, rhs: &Vec3<f64>) -> Self::Output {
-        rhs * self
-    }
-}
-
-impl<T> std::ops::Div<T> for &Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
-
-    fn div(self, rhs: T) -> Self::Output {
+    fn div(self, rhs: Float) -> Self::Output {
         Vec3 {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -311,13 +232,10 @@ where
     }
 }
 
-impl<T> std::ops::Div<T> for Vec3<T>
-where
-    T: Float,
-{
-    type Output = Vec3<T>;
+impl std::ops::Div<Float> for Vec3 {
+    type Output = Vec3;
 
-    fn div(self, rhs: T) -> Self::Output {
+    fn div(self, rhs: Float) -> Self::Output {
         Vec3 {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -326,10 +244,7 @@ where
     }
 }
 
-impl<T> std::fmt::Display for Vec3<T>
-where
-    T: Float,
-{
+impl std::fmt::Display for Vec3 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{} {} {}", self.x, self.y, self.z)
     }

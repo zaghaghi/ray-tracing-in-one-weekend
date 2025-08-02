@@ -5,7 +5,7 @@ use crate::{
     hittable::Hittable,
     interval::Interval,
     ray::Ray,
-    vec3::{DoubleVec3, Point3},
+    vec3::{Point3, Vec3},
 };
 
 pub struct Camera {
@@ -15,8 +15,8 @@ pub struct Camera {
     pixel_samples_scale: f64,
     center: Point3,
     pixel00_loc: Point3,
-    pixel_delta_u: DoubleVec3,
-    pixel_delta_v: DoubleVec3,
+    pixel_delta_u: Vec3,
+    pixel_delta_v: Vec3,
 }
 
 impl Camera {
@@ -31,8 +31,8 @@ impl Camera {
         let center = Point3::new(0.0, 0.0, 0.0);
         let focal_point = Point3::new(0.0, 0.0, focal_length);
 
-        let viewport_u = DoubleVec3::new(viewport_width, 0.0, 0.0);
-        let viewport_v = DoubleVec3::new(0.0, -viewport_height, 0.0);
+        let viewport_u = Vec3::new(viewport_width, 0.0, 0.0);
+        let viewport_v = Vec3::new(0.0, -viewport_height, 0.0);
 
         let pixel_delta_u = &viewport_u / image_width as f64;
         let pixel_delta_v = &viewport_v / image_height as f64;
@@ -85,8 +85,8 @@ impl Camera {
         Ray::new(self.center.clone(), ray_direction)
     }
 
-    fn sample_square() -> DoubleVec3 {
-        DoubleVec3::new(
+    fn sample_square() -> Vec3 {
+        Vec3::new(
             rand::random::<f64>() - 0.5,
             rand::random::<f64>() - 0.5,
             0.0,
