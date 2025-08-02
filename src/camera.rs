@@ -65,11 +65,9 @@ impl Camera {
         for j in 0..self.image_height {
             for i in 0..self.image_width {
                 let mut pixel_color = Color::new(0.0, 0.0, 0.0);
-                let gamma = i / (self.image_width / 5) * 20 + 10;
-                let gamma = gamma as f64 / 100.0;
                 for _ in 0..self.samples_per_pixel {
                     let ray = self.get_ray(i, j);
-                    pixel_color += Camera::ray_color(&ray, world.clone(), self.max_depth, gamma);
+                    pixel_color += Camera::ray_color(&ray, world.clone(), self.max_depth);
                 }
                 let pixel_color = pixel_color * self.pixel_samples_scale;
                 print!("{pixel_color}");
@@ -97,14 +95,14 @@ impl Camera {
         )
     }
 
-    fn ray_color(ray: &Ray, world: Arc<dyn Hittable>, depth: i32, gamma: f64) -> Color {
+    fn ray_color(ray: &Ray, world: Arc<dyn Hittable>, depth: i32) -> Color {
         if depth <= 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
         if let Some(hit) = world.hit(ray, &Interval::new(0.001, f64::INFINITY)) {
             let reflect_dir = hit.normal + Vec3::random_unit();
             let reflect_ray = Ray::new(hit.point, reflect_dir);
-            return Camera::ray_color(&reflect_ray, world, depth - 1, gamma) * gamma;
+            return Camera::ray_color(&reflect_ray, world, depth - 1) * 0.5;
         }
         let unit_direction = ray.direction.clone().unit();
         let a = 0.5 * unit_direction.y + 1.0;

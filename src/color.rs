@@ -8,6 +8,22 @@ impl Color {
     pub fn new(r: f64, g: f64, b: f64) -> Self {
         Self(Vec3::new(r, g, b))
     }
+
+    pub fn to_gamma_space(&self) -> Self {
+        Self(Vec3::new(
+            Self::linear_to_gamma(self.x),
+            Self::linear_to_gamma(self.y),
+            Self::linear_to_gamma(self.z),
+        ))
+    }
+
+    fn linear_to_gamma(component: f64) -> f64 {
+        if component > 0.0 {
+            component.sqrt()
+        } else {
+            0.0
+        }
+    }
 }
 
 impl std::fmt::Display for Color {
@@ -17,9 +33,11 @@ impl std::fmt::Display for Color {
             max: 0.999,
         };
 
-        let r: u8 = (256.0 * INTENSITY.clamp(self.0.x)) as u8;
-        let g: u8 = (256.0 * INTENSITY.clamp(self.0.y)) as u8;
-        let b: u8 = (256.0 * INTENSITY.clamp(self.0.z)) as u8;
+        let color = self.to_gamma_space();
+
+        let r: u8 = (256.0 * INTENSITY.clamp(color.x)) as u8;
+        let g: u8 = (256.0 * INTENSITY.clamp(color.y)) as u8;
+        let b: u8 = (256.0 * INTENSITY.clamp(color.z)) as u8;
 
         write!(f, "{} {} {}\n", r, g, b)
     }
