@@ -50,10 +50,6 @@ impl Hittable for Sphere {
         let time = root;
         let point = ray.at(time);
         let normal = (&point - &self.center) / self.radius;
-        Some(HitRecord {
-            point,
-            normal,
-            time,
-        })
+        Some(HitRecord::new(point, time, normal, &ray))
     }
 }
