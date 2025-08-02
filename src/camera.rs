@@ -11,6 +11,8 @@ use crate::{
 pub struct Camera {
     image_width: i32,
     image_height: i32,
+    samples_per_pixel: i32,
+    pixel_samples_scale: f64,
     center: Point3,
     pixel00_loc: Point3,
     pixel_delta_u: DoubleVec3,
@@ -18,7 +20,8 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, image_width: i32) -> Self {
+    pub fn new(aspect_ratio: f64, image_width: i32, samples_per_pixel: i32) -> Self {
+        let pixel_samples_scale = 1.0 / samples_per_pixel as f64;
         let image_height = (image_width as f64 / aspect_ratio) as i32;
         let image_height = if image_height < 1 { 1 } else { image_height };
 
@@ -42,6 +45,8 @@ impl Camera {
         Self {
             image_width,
             image_height,
+            samples_per_pixel,
+            pixel_samples_scale,
             center,
             pixel00_loc,
             pixel_delta_u,
@@ -56,17 +61,36 @@ impl Camera {
 
         for j in 0..self.image_height {
             for i in 0..self.image_width {
-                let pixel_center = &self.pixel_delta_u * i as f64
-                    + &self.pixel_delta_v * j as f64
-                    + &self.pixel00_loc;
-                let ray_direction = &pixel_center - &self.center;
-                let ray = Ray::new(self.center.clone(), ray_direction);
-                let pixel_color = Camera::ray_color(&ray, world.clone());
+                let mut pixel_color = Color::new(0.0, 0.0, 0.0);
+                for _ in 0..self.samples_per_pixel {
+                    let ray = self.get_ray(i, j);
+                    pixel_color += Camera::ray_color(&ray, world.clone());
+                }
+                // let pixel_color = Camera::ray_color(&ray, world.clone());
+                let pixel_color = pixel_color * self.pixel_samples_scale;
                 print!("{pixel_color}");
                 pb.inc(1);
             }
         }
         pb.finish_with_message("done");
+    }
+
+    fn get_ray(&self, i: i32, j: i32) -> Ray {
+        let offset = Camera::sample_square();
+        let pixel_sample = &self.pixel_delta_u * (i as f64 + offset.x)
+            + &self.pixel_delta_v * (j as f64 + offset.y)
+            + &self.pixel00_loc;
+
+        let ray_direction = &pixel_sample - &self.center;
+        Ray::new(self.center.clone(), ray_direction)
+    }
+
+    fn sample_square() -> DoubleVec3 {
+        DoubleVec3::new(
+            rand::random::<f64>() - 0.5,
+            rand::random::<f64>() - 0.5,
+            0.0,
+        )
     }
 
     fn ray_color(ray: &Ray, world: Arc<dyn Hittable>) -> Color {

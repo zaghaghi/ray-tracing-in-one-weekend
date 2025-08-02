@@ -32,6 +32,10 @@ impl Interval {
         self.min < x && x < self.max
     }
 
+    pub fn clamp(&self, x: f64) -> f64 {
+        f64::max(self.min, f64::min(self.max, x))
+    }
+
     pub fn empty() -> &'static Interval {
         static EMPTY: Interval = Interval {
             min: f64::INFINITY,

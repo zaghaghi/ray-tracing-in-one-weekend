@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use crate::vec3::DoubleVec3;
+use crate::{interval::Interval, vec3::DoubleVec3};
 
 pub struct Color(pub DoubleVec3);
 
@@ -12,9 +12,14 @@ impl Color {
 
 impl std::fmt::Display for Color {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let r: u8 = (255.999 * self.0.x) as u8;
-        let g: u8 = (255.999 * self.0.y) as u8;
-        let b: u8 = (255.999 * self.0.z) as u8;
+        static INTENSITY: Interval = Interval {
+            min: 0.000,
+            max: 0.999,
+        };
+
+        let r: u8 = (256.0 * INTENSITY.clamp(self.0.x)) as u8;
+        let g: u8 = (256.0 * INTENSITY.clamp(self.0.y)) as u8;
+        let b: u8 = (256.0 * INTENSITY.clamp(self.0.z)) as u8;
 
         write!(f, "{} {} {}\n", r, g, b)
     }
@@ -41,5 +46,13 @@ impl std::ops::Add<Self> for Color {
 
     fn add(self, rhs: Self) -> Self::Output {
         Color::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl std::ops::AddAssign<Self> for Color {
+    fn add_assign(&mut self, rhs: Self) {
+        self.0.x += rhs.x;
+        self.0.y += rhs.y;
+        self.0.z += rhs.z;
     }
 }
