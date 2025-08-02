@@ -40,6 +40,25 @@ impl Vec3 {
         self / self.len()
     }
 
+    pub fn random_unit() -> Self {
+        loop {
+            let p = Self::random_range(-1.0..=1.0);
+            let lensq = p.len_squared();
+            if 1e-160 < lensq && lensq <= 1.0 {
+                return p / lensq.sqrt();
+            }
+        }
+    }
+
+    pub fn random_reflect(normal: &Self) -> Self {
+        let on_unit_sphere = Self::random_unit();
+        if on_unit_sphere.dot(normal) > 0.0 {
+            on_unit_sphere
+        } else {
+            -on_unit_sphere
+        }
+    }
+
     pub fn random() -> Self {
         Self {
             x: rand::random(),

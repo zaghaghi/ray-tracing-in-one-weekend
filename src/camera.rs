@@ -12,6 +12,7 @@ pub struct Camera {
     image_width: i32,
     image_height: i32,
     samples_per_pixel: i32,
+    max_depth: i32,
     pixel_samples_scale: f64,
     center: Point3,
     pixel00_loc: Point3,
@@ -21,6 +22,7 @@ pub struct Camera {
 
 impl Camera {
     pub fn new(aspect_ratio: f64, image_width: i32, samples_per_pixel: i32) -> Self {
+        let max_depth = 50;
         let pixel_samples_scale = 1.0 / samples_per_pixel as f64;
         let image_height = (image_width as f64 / aspect_ratio) as i32;
         let image_height = if image_height < 1 { 1 } else { image_height };
@@ -46,6 +48,7 @@ impl Camera {
             image_width,
             image_height,
             samples_per_pixel,
+            max_depth,
             pixel_samples_scale,
             center,
             pixel00_loc,
@@ -64,9 +67,8 @@ impl Camera {
                 let mut pixel_color = Color::new(0.0, 0.0, 0.0);
                 for _ in 0..self.samples_per_pixel {
                     let ray = self.get_ray(i, j);
-                    pixel_color += Camera::ray_color(&ray, world.clone());
+                    pixel_color += Camera::ray_color(&ray, world.clone(), self.max_depth);
                 }
-                // let pixel_color = Camera::ray_color(&ray, world.clone());
                 let pixel_color = pixel_color * self.pixel_samples_scale;
                 print!("{pixel_color}");
                 pb.inc(1);
@@ -93,9 +95,14 @@ impl Camera {
         )
     }
 
-    fn ray_color(ray: &Ray, world: Arc<dyn Hittable>) -> Color {
+    fn ray_color(ray: &Ray, world: Arc<dyn Hittable>, depth: i32) -> Color {
+        if depth <= 0 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
         if let Some(hit) = world.hit(ray, &Interval::new(0.0, f64::INFINITY)) {
-            return Color::new(hit.normal.x + 1.0, hit.normal.y + 1.0, hit.normal.z + 1.0) * 0.5;
+            let reflect_dir = Vec3::random_reflect(&hit.normal);
+            let reflect_ray = Ray::new(hit.point, reflect_dir);
+            return Camera::ray_color(&reflect_ray, world, depth - 1) * 0.5;
         }
         let unit_direction = ray.direction.clone().unit();
         let a = 0.5 * unit_direction.y + 1.0;
