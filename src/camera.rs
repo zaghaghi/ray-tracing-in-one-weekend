@@ -99,8 +99,8 @@ impl Camera {
         if depth <= 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
-        if let Some(hit) = world.hit(ray, &Interval::new(0.0, f64::INFINITY)) {
-            let reflect_dir = Vec3::random_reflect(&hit.normal);
+        if let Some(hit) = world.hit(ray, &Interval::new(0.001, f64::INFINITY)) {
+            let reflect_dir = hit.normal + Vec3::random_unit();
             let reflect_ray = Ray::new(hit.point, reflect_dir);
             return Camera::ray_color(&reflect_ray, world, depth - 1) * 0.5;
         }
