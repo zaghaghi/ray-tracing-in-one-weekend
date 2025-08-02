@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{cmp::Ordering, sync::Arc};
 
 use crate::hittable::{HitRecord, Hittable};
 
@@ -26,6 +26,12 @@ impl Hittable for HittableList {
         self.objects
             .iter()
             .filter_map(|object| object.hit(ray, ray_tmin, ray_tmax))
-            .last()
+            .min_by(|x, y| {
+                if x.time < y.time {
+                    Ordering::Less
+                } else {
+                    Ordering::Greater
+                }
+            })
     }
 }

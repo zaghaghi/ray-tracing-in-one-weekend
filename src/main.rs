@@ -1,5 +1,10 @@
+use std::{f64, sync::Arc};
+
 use color::Color;
+use hittable::Hittable;
+use hittable_list::HittableList;
 use ray::Ray;
+use sphere::Sphere;
 use vec3::{DoubleVec3, Point3};
 
 pub mod color;
@@ -9,20 +14,9 @@ pub mod ray;
 pub mod sphere;
 pub mod vec3;
 
-fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> f64 {
-    let oc = center - &ray.origin;
-    let a = ray.direction.len_squared();
-    let h = ray.direction.dot(&oc);
-    let c = oc.len_squared() - radius * radius;
-    let d = h * h - a * c;
-    if d < 0.0 { -1.0 } else { (h - d.sqrt()) / a }
-}
-
-fn ray_color(ray: &Ray) -> Color {
-    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, ray);
-    if t > 0.0 {
-        let n = (ray.at(t) - DoubleVec3::new(0.0, 0.0, -1.0)).unit();
-        return Color::new(n.x + 1.0, n.y + 1.0, n.z + 1.0) * 0.5;
+fn ray_color(ray: &Ray, world: Arc<dyn Hittable>) -> Color {
+    if let Some(hit) = world.hit(ray, 0.0, f64::INFINITY) {
+        return Color::new(hit.normal.x + 1.0, hit.normal.y + 1.0, hit.normal.z + 1.0) * 0.5;
     }
     let unit_direction = ray.direction.clone().unit();
     let a = 0.5 * unit_direction.y + 1.0;
@@ -36,6 +30,13 @@ fn main() {
 
     let image_height = (image_width as f64 / aspec_ratio) as i32;
     let image_height = if image_height < 1 { 1 } else { image_height };
+
+    // World
+    let mut world = HittableList::default();
+    world.add(Arc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Arc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+
+    let world = Arc::new(world);
 
     // Camera
     let focal_length = 1.0;
@@ -65,7 +66,7 @@ fn main() {
             let pixel_center = &pixel_delta_u * i as f64 + &pixel_delta_v * j as f64 + &pixel00_loc;
             let ray_direction = &pixel_center - &camera_center;
             let ray = Ray::new(camera_center.clone(), ray_direction);
-            let pixel_color = ray_color(&ray);
+            let pixel_color = ray_color(&ray, world.clone());
             print!("{pixel_color}");
             pb.inc(1);
         }
