@@ -31,8 +31,11 @@ where
     }
 
     pub fn len(&self) -> T {
-        let len_squared: T = self.x * self.x + self.y * self.y + self.z * self.z;
-        len_squared.sqrt()
+        self.len_squared().sqrt()
+    }
+
+    pub fn len_squared(&self) -> T {
+        self.x * self.x + self.y * self.y + self.z * self.z
     }
 
     pub fn dot(&self, rhs: &Self) -> T {

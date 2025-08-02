@@ -8,15 +8,11 @@ pub mod vec3;
 
 fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> f64 {
     let oc = center - &ray.origin;
-    let a = ray.direction.dot(&ray.direction);
-    let b = ray.direction.dot(&oc) * -2.0;
-    let c = oc.dot(&oc) - radius * radius;
-    let d = b * b - 4.0 * a * c;
-    if d < 0.0 {
-        -1.0
-    } else {
-        (-b - d.sqrt()) / (2.0 * a)
-    }
+    let a = ray.direction.len_squared();
+    let h = ray.direction.dot(&oc);
+    let c = oc.len_squared() - radius * radius;
+    let d = h * h - a * c;
+    if d < 0.0 { -1.0 } else { (h - d.sqrt()) / a }
 }
 
 fn ray_color(ray: &Ray) -> Color {
