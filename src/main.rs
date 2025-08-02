@@ -3,6 +3,7 @@ use std::{f64, sync::Arc};
 use color::Color;
 use hittable::Hittable;
 use hittable_list::HittableList;
+use interval::Interval;
 use ray::Ray;
 use sphere::Sphere;
 use vec3::{DoubleVec3, Point3};
@@ -10,12 +11,13 @@ use vec3::{DoubleVec3, Point3};
 pub mod color;
 pub mod hittable;
 pub mod hittable_list;
+pub mod interval;
 pub mod ray;
 pub mod sphere;
 pub mod vec3;
 
 fn ray_color(ray: &Ray, world: Arc<dyn Hittable>) -> Color {
-    if let Some(hit) = world.hit(ray, 0.0, f64::INFINITY) {
+    if let Some(hit) = world.hit(ray, &Interval::new(0.0, f64::INFINITY)) {
         return Color::new(hit.normal.x + 1.0, hit.normal.y + 1.0, hit.normal.z + 1.0) * 0.5;
     }
     let unit_direction = ray.direction.clone().unit();

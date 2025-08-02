@@ -1,6 +1,10 @@
 use std::{cmp::Ordering, sync::Arc};
 
-use crate::hittable::{HitRecord, Hittable};
+use crate::{
+    hittable::{HitRecord, Hittable},
+    interval::Interval,
+    ray::Ray,
+};
 
 #[derive(Default)]
 pub struct HittableList {
@@ -22,10 +26,10 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, ray: &crate::ray::Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, interval: &Interval) -> Option<HitRecord> {
         self.objects
             .iter()
-            .filter_map(|object| object.hit(ray, ray_tmin, ray_tmax))
+            .filter_map(|object| object.hit(ray, interval))
             .min_by(|x, y| {
                 if x.time < y.time {
                     Ordering::Less
