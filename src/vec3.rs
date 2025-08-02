@@ -311,6 +311,21 @@ where
     }
 }
 
+impl<T> std::ops::Div<T> for Vec3<T>
+where
+    T: Float,
+{
+    type Output = Vec3<T>;
+
+    fn div(self, rhs: T) -> Self::Output {
+        Vec3 {
+            x: self.x / rhs,
+            y: self.y / rhs,
+            z: self.z / rhs,
+        }
+    }
+}
+
 impl<T> std::fmt::Display for Vec3<T>
 where
     T: Float,

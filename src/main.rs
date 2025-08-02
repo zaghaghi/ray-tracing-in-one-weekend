@@ -3,7 +3,9 @@ use ray::Ray;
 use vec3::{DoubleVec3, Point3};
 
 pub mod color;
+pub mod hittable;
 pub mod ray;
+pub mod sphere;
 pub mod vec3;
 
 fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> f64 {
