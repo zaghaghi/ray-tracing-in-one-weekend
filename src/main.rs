@@ -4,6 +4,7 @@ use vec3::{DoubleVec3, Point3};
 
 pub mod color;
 pub mod hittable;
+pub mod hittable_list;
 pub mod ray;
 pub mod sphere;
 pub mod vec3;
