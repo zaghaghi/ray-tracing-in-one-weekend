@@ -35,12 +35,8 @@ where
         len_squared.sqrt()
     }
 
-    pub fn dot(&self, rhs: &Self) -> Self {
-        Self {
-            x: self.x * rhs.x,
-            y: self.y * rhs.y,
-            z: self.z * rhs.z,
-        }
+    pub fn dot(&self, rhs: &Self) -> T {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
     pub fn cross(&self, rhs: &Self) -> Self {
