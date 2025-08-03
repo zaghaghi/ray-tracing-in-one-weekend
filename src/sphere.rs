@@ -1,10 +1,9 @@
 use std::sync::Arc;
 
 use crate::{
-    color::Color,
     hittable::{HitRecord, Hittable},
     interval::Interval,
-    material::{Lambertian, Material, Metal},
+    material::Material,
     ray::Ray,
     vec3::Point3,
 };
@@ -15,22 +14,15 @@ pub struct Sphere<T: Material> {
     pub material: Arc<T>,
 }
 
-impl Sphere<Lambertian> {
-    pub fn new(center: Point3, radius: f64, color: Color) -> Self {
+impl<T> Sphere<T>
+where
+    T: Material,
+{
+    pub fn new(center: Point3, radius: f64, material: T) -> Self {
         Self {
             center,
             radius: f64::max(radius, 0.0),
-            material: Arc::new(Lambertian::new(color)),
-        }
-    }
-}
-
-impl Sphere<Metal> {
-    pub fn new(center: Point3, radius: f64, color: Color) -> Self {
-        Self {
-            center,
-            radius: f64::max(radius, 0.0),
-            material: Arc::new(Metal::new(color)),
+            material: Arc::new(material),
         }
     }
 }

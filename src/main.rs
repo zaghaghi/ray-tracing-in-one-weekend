@@ -20,18 +20,29 @@ pub mod vec3;
 fn main() {
     // World
     let mut world = HittableList::default();
-    let ground = Sphere::<Lambertian>::new(
+    let ground = Sphere::new(
         Point3::new(0.0, -100.5, -1.0),
         100.0,
-        Color::new(0.8, 0.8, 0.0),
+        Lambertian::new(Color::new(0.8, 0.8, 0.0)),
     );
 
-    let center =
-        Sphere::<Lambertian>::new(Point3::new(0.0, 0.0, -1.2), 0.5, Color::new(0.1, 0.2, 0.5));
+    let center = Sphere::new(
+        Point3::new(0.0, 0.0, -1.2),
+        0.5,
+        Lambertian::new(Color::new(0.1, 0.2, 0.5)),
+    );
 
-    let left = Sphere::<Metal>::new(Point3::new(-1.0, 0.0, -1.0), 0.5, Color::new(0.8, 0.8, 0.8));
+    let left = Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        Metal::new(Color::new(0.8, 0.8, 0.8), 0.3),
+    );
 
-    let right = Sphere::<Metal>::new(Point3::new(1.0, 0.0, -1.0), 0.5, Color::new(0.8, 0.6, 0.2));
+    let right = Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        Metal::new(Color::new(0.8, 0.6, 0.2), 1.0),
+    );
 
     world.add(Arc::new(ground));
     world.add(Arc::new(center));
@@ -39,6 +50,6 @@ fn main() {
     world.add(Arc::new(right));
 
     // Camera
-    let camera = Camera::new(16.0 / 9.0, 400, 1600);
+    let camera = Camera::new(16.0 / 9.0, 800, 800);
     camera.render(Arc::new(world));
 }
