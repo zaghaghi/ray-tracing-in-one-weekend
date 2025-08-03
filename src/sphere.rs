@@ -1,25 +1,44 @@
+use std::sync::Arc;
+
 use crate::{
+    color::Color,
     hittable::{HitRecord, Hittable},
     interval::Interval,
+    material::{Lambertian, Material, Metal},
     ray::Ray,
     vec3::Point3,
 };
 
-pub struct Sphere {
+pub struct Sphere<T: Material> {
     pub center: Point3,
     pub radius: f64,
+    pub material: Arc<T>,
 }
 
-impl Sphere {
-    pub fn new(center: Point3, radius: f64) -> Self {
+impl Sphere<Lambertian> {
+    pub fn new(center: Point3, radius: f64, color: Color) -> Self {
         Self {
             center,
             radius: f64::max(radius, 0.0),
+            material: Arc::new(Lambertian::new(color)),
         }
     }
 }
 
-impl Hittable for Sphere {
+impl Sphere<Metal> {
+    pub fn new(center: Point3, radius: f64, color: Color) -> Self {
+        Self {
+            center,
+            radius: f64::max(radius, 0.0),
+            material: Arc::new(Metal::new(color)),
+        }
+    }
+}
+
+impl<T> Hittable for Sphere<T>
+where
+    T: Material + 'static,
+{
     fn hit(&self, ray: &Ray, interval: &Interval) -> Option<crate::hittable::HitRecord> {
         let oc = &self.center - &ray.origin;
         let a = ray.direction.len_squared();
@@ -47,6 +66,12 @@ impl Hittable for Sphere {
         let time = root;
         let point = ray.at(time);
         let normal = (&point - &self.center) / self.radius;
-        Some(HitRecord::new(point, time, normal, &ray))
+        Some(HitRecord::new(
+            point,
+            time,
+            normal,
+            &ray,
+            self.material.clone(),
+        ))
     }
 }

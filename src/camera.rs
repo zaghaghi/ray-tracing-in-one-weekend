@@ -100,9 +100,11 @@ impl Camera {
             return Color::new(0.0, 0.0, 0.0);
         }
         if let Some(hit) = world.hit(ray, &Interval::new(0.001, f64::INFINITY)) {
-            let reflect_dir = hit.normal + Vec3::random_unit();
-            let reflect_ray = Ray::new(hit.point, reflect_dir);
-            return Camera::ray_color(&reflect_ray, world, depth - 1) * 0.5;
+            return if let Some(scatter) = hit.material.scatter(ray, &hit) {
+                scatter.attenuation * Camera::ray_color(&scatter.ray, world, depth - 1)
+            } else {
+                Color::new(0.0, 0.0, 0.0)
+            };
         }
         let unit_direction = ray.direction.clone().unit();
         let a = 0.5 * unit_direction.y + 1.0;

@@ -2,6 +2,7 @@ use std::ops::Deref;
 
 use crate::{interval::Interval, vec3::Vec3};
 
+#[derive(Clone)]
 pub struct Color(pub Vec3);
 
 impl Color {
@@ -72,5 +73,13 @@ impl std::ops::AddAssign<Self> for Color {
         self.0.x += rhs.x;
         self.0.y += rhs.y;
         self.0.z += rhs.z;
+    }
+}
+
+impl std::ops::Mul<Self> for Color {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Color::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 }

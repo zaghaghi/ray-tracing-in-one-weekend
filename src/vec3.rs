@@ -66,12 +66,22 @@ impl Vec3 {
             z: rand::random(),
         }
     }
+
     pub fn random_range<R: SampleRange<Float> + Clone>(range: R) -> Self {
         Self {
             x: rand::random_range(range.clone()),
             y: rand::random_range(range.clone()),
             z: rand::random_range(range.clone()),
         }
+    }
+
+    pub fn near_zero(&self) -> bool {
+        static S: Float = 1e-8;
+        self.x.abs() < S && self.y.abs() < S && self.z.abs() < S
+    }
+
+    pub fn reflect(v: &Self, n: &Self) -> Self {
+        v - &(v.dot(n) * n * 2.0)
     }
 }
 
