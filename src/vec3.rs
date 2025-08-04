@@ -83,6 +83,14 @@ impl Vec3 {
     pub fn reflect(v: &Self, n: &Self) -> Self {
         v - &(v.dot(n) * n * 2.0)
     }
+
+    pub fn refract(uv: &Self, n: &Self, etai_over_etat: Float) -> Self {
+        let uv_neg = -uv.clone();
+        let cos_theta = uv_neg.dot(n).min(1.0);
+        let r_out_perp = &(uv + &(cos_theta * n)) * etai_over_etat;
+        let r_out_parallel = n * -(1.0 - r_out_perp.len_squared()).abs().sqrt();
+        r_out_perp + r_out_parallel
+    }
 }
 
 impl std::ops::Neg for Vec3 {
@@ -177,6 +185,18 @@ impl std::ops::Add<Self> for Vec3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
+        }
+    }
+}
+
+impl std::ops::Add<Float> for &Vec3 {
+    type Output = Vec3;
+
+    fn add(self, rhs: Float) -> Self::Output {
+        Vec3 {
+            x: self.x + rhs,
+            y: self.y + rhs,
+            z: self.z + rhs,
         }
     }
 }
