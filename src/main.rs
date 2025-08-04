@@ -32,10 +32,12 @@ fn main() {
         Lambertian::new(Color::new(0.1, 0.2, 0.5)),
     );
 
-    let left = Sphere::new(
+    let left = Sphere::new(Point3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5));
+
+    let bubble = Sphere::new(
         Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        Dielectric::new(1.0 / 1.33),
+        0.4,
+        Dielectric::new(1.0 / 1.5),
     );
 
     let right = Sphere::new(
@@ -47,6 +49,7 @@ fn main() {
     world.add(Arc::new(ground));
     world.add(Arc::new(center));
     world.add(Arc::new(left));
+    world.add(Arc::new(bubble));
     world.add(Arc::new(right));
 
     // Camera
